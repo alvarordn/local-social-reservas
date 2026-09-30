@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reserva del Local Social</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #F0ECE4;
+    --surface: #FFFFFF;
+    --ink: #2A2420;
+    --ink-muted: #6B6259;
+    --accent: #3F6B5E;
+    --accent-contrast: #FFFFFF;
+    --brass: #9C7420;
+    --denied: #A24B3F;
+    --border: #DAD3C7;
+    --success-bg: #E7EEE9;
+    --success-border: #BFD6C9;
+    --plate-bg: #211D19;
+    --plate-text: #C79A45;
+    --plate-border: #3D362C;
+    --font-display: 'IBM Plex Sans', system-ui, sans-serif;
+    --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #1B1815;
+      --surface: #24211D;
+      --ink: #EDE7DD;
+      --ink-muted: #A79E8F;
+      --accent: #6FA396;
+      --accent-contrast: #12211C;
+      --brass: #D9A84E;
+      --denied: #D2776A;
+      --border: #3A352E;
+      --success-bg: #1E2B26;
+      --success-border: #3A5147;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #1B1815;
+    --surface: #24211D;
+    --ink: #EDE7DD;
+    --ink-muted: #A79E8F;
+    --accent: #6FA396;
+    --accent-contrast: #12211C;
+    --brass: #D9A84E;
+    --denied: #D2776A;
+    --border: #3A352E;
+    --success-bg: #1E2B26;
+    --success-border: #3A5147;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    display: flex;
+    justify-content: center;
+    padding-inline: 16px;
+    padding-block: 40px;
+  }
+
+  .page {
+    width: 100%;
+    max-width: 620px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin: 0 0 6px;
+  }
+
+  header h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(24px, 5vw, 30px);
+    line-height: 1.15;
+    margin: 0 0 8px;
+    text-wrap: balance;
+  }
+
+  header p {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 15px;
+    line-height: 1.5;
+    max-width: 46ch;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+  }
+
+  .card h2 {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 12px;
+  }
+
+  .calendar-frame {
+    width: 100%;
+    overflow: hidden;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  .calendar-frame iframe {
+    display: block;
+    width: 100%;
+    height: 480px;
+    border: 0;
+  }
+
+  form { display: flex; flex-direction: column; gap: 20px; }
+
+  .section + .section {
+    border-top: 1px solid var(--border);
+    padding-top: 18px;
+  }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+
+  .row { display: grid; gap: 12px; }
+  .row.cols-2 { grid-template-columns: 1fr 1fr; }
+  .row.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  @media (max-width: 480px) {
+    .row.cols-2 { grid-template-columns: 1fr; }
+    body { padding-block: 24px; }
+  }
+
+  label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  input, select {
+    font: inherit;
+    font-family: var(--font-body);
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    width: 100%;
+  }
+
+  input[type="date"], input#iban, .plate { font-family: var(--font-mono); }
+  #iban { text-transform: uppercase; }
+
+  input::placeholder { color: var(--ink-muted); opacity: 0.7; }
+
+  input:focus, select:focus, button:focus-visible, input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  input[type="file"] {
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  .hint {
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin: 0;
+  }
+
+  /* Address plate: a fixed dark/brass nameplate, styled like a real door plate,
+     independent of the page theme so it always reads as one physical object. */
+  .plate {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--plate-bg);
+    border: 1px solid var(--plate-border);
+    border-radius: 4px;
+    color: var(--plate-text);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    padding: 10px 12px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .plate .sep { opacity: 0.5; }
+  .plate.is-empty { color: var(--plate-text); opacity: 0.45; }
+
+  .consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .consent input {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    accent-color: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .consent label {
+    font-size: 13px;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: normal;
+    color: var(--ink);
+    line-height: 1.45;
+  }
+
+  button[type="submit"] {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent-contrast);
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+
+  button[type="submit"]:disabled {
+    background: var(--border);
+    color: var(--ink-muted);
+    cursor: not-allowed;
+  }
+
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spinner { animation-duration: 1.6s; }
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  [hidden] { display: none !important; }
+
+  #errorMsg {
+    font-size: 13px;
+    color: var(--denied);
+    margin: 0;
+  }
+
+  #successMsg {
+    background: var(--success-bg);
+    border: 1px solid var(--success-border);
+    border-radius: 10px;
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  #successMsg strong { display: block; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <header>
+      <p class="eyebrow">Comunidad de vecinos</p>
+      <h1>Reserva del local social</h1>
+      <p>Consulta la disponibilidad en el calendario y solicita tu turno. El administrador revisará y confirmará tu reserva por correo.</p>
+    </header>
+
+    <section class="card">
+      <p class="eyebrow" style="margin-bottom:2px">Disponibilidad</p>
+      <h2>Calendario de reservas</h2>
+      <div class="calendar-frame">
+        <iframe id="calendarFrame" scrolling="no" title="Calendario de reservas del local social"></iframe>
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow" style="margin-bottom:2px">Solicitud</p>
+      <h2>Formulario de reserva</h2>
+
+      <form id="reservaForm" novalidate>
+
+        <div class="section field">
+          <label for="nombre">Nombre y apellidos</label>
+          <input type="text" id="nombre" name="nombre" required autocomplete="name">
+        </div>
+
+        <div class="section" style="display:flex; flex-direction:column; gap:12px;">
+          <div class="row cols-3">
+            <div class="field">
+              <label for="portal">Portal</label>
+              <select id="portal" name="portal" required>
+                <option value="" disabled selected>--</option>
+                <option>1</option><option>2</option><option>3</option><option>4</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="piso">Piso</label>
+              <select id="piso" name="piso" required>
+                <option value="" disabled selected>--</option>
+                <option>1</option><option>2</option><option>3</option><option>4</option>
+                <option>5</option><option>6</option><option>7</option><option>8</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="letra">Letra</label>
+              <select id="letra" name="letra" required>
+                <option value="" disabled selected>--</option>
+                <option>A</option><option>B</option>
+              </select>
+            </div>
+          </div>
+          <div id="addressPlate" class="plate is-empty" aria-hidden="true">
+            <span data-plate-portal>Portal —</span><span class="sep">·</span><span data-plate-piso-letra>—</span>
+          </div>
+        </div>
+
+        <div class="section row cols-2">
+          <div class="field">
+            <label for="telefono">Teléfono móvil</label>
+            <input type="tel" id="telefono" name="telefono" required pattern="[0-9]{9}" placeholder="600 000 000" autocomplete="tel">
+          </div>
+          <div class="field">
+            <label for="email">Correo electrónico</label>
+            <input type="email" id="email" name="email" required autocomplete="email">
+          </div>
+        </div>
+
+        <div class="section row cols-2">
+          <div class="field">
+            <label for="diaReserva">Día de la reserva</label>
+            <input type="date" id="diaReserva" name="diaReserva" required>
+          </div>
+          <div class="field">
+            <label for="horario">Horario</label>
+            <select id="horario" name="horario" required>
+              <option value="" disabled selected>--</option>
+              <option>Mañana</option>
+              <option>Tarde</option>
+              <option>Día completo</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="section" style="display:flex; flex-direction:column; gap:16px;">
+          <div class="field">
+            <label for="iban">IBAN (fianza)</label>
+            <input type="text" id="iban" name="iban" required placeholder="ES00 0000 0000 0000 0000 0000"
+              pattern="[A-Za-z]{2}[0-9A-Za-z ]{13,32}">
+          </div>
+          <div class="field">
+            <label for="fianza">Comprobante de fianza</label>
+            <input type="file" id="fianza" name="fianza" required accept="image/*,application/pdf">
+            <p class="hint">Imagen o PDF, máximo 5 MB.</p>
+          </div>
+        </div>
+
+        <div class="section consent">
+          <input type="checkbox" id="consentimiento" name="consentimiento" required>
+          <label for="consentimiento">
+            Consiento la publicación de mis datos en el calendario de reservas del local social compartido al resto de vecinos de la comunidad
+          </label>
+        </div>
+
+        <p id="errorMsg" hidden></p>
+
+        <button type="submit" id="submitBtn" disabled>
+          <span id="spinner" class="spinner" hidden></span>
+          <span id="submitLabel">Enviar solicitud</span>
+        </button>
+      </form>
+
+      <div id="successMsg" hidden>
+        <strong>Solicitud enviada correctamente</strong>
+        Recibirás un correo cuando el administrador la revise.
+      </div>
+    </section>
+
+    <section class="card">
+      <p class="eyebrow" style="margin-bottom:2px">Después de tu reserva</p>
+      <h2>Devolución del local y fianza</h2>
+      <p class="hint" style="margin-bottom:14px;">Cuando termines de usar el local, sube aquí las fotos de cómo lo has dejado. El enlace del correo de aprobación rellena automáticamente el identificador de tu reserva.</p>
+
+      <form id="devolucionForm" novalidate>
+        <div class="section field">
+          <label for="reservaId">Identificador de tu reserva</label>
+          <input type="text" id="reservaId" name="reservaId" required placeholder="Lo encontrarás en el correo de aprobación">
+        </div>
+
+        <div class="section field">
+          <label for="fotosDevolucion">Fotos del local</label>
+          <input type="file" id="fotosDevolucion" name="fotosDevolucion" required accept="image/*" multiple>
+          <p class="hint" id="fotosHint">Hasta 6 fotos, 5 MB cada una.</p>
+        </div>
+
+        <p id="devErrorMsg" hidden></p>
+
+        <button type="submit" id="devSubmitBtn" disabled>
+          <span id="devSpinner" class="spinner" hidden></span>
+          <span id="devSubmitLabel">Enviar fotos</span>
+        </button>
+      </form>
+
+      <div id="devSuccessMsg" hidden>
+        <strong>Fotos enviadas correctamente</strong>
+        El administrador revisará el estado del local y te confirmará la devolución de la fianza por correo.
+      </div>
+    </section>
+
+  </div>
+
+<script>
+  // ======= CONFIGURACIÓN: sustituye estos valores =======
+  const CONFIG = {
+    SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbw_9qJucNusMPb9tN1hg6vkbLWvpkpvujv-mReOE8Lwlg-s7sPoE6cAOtV6OIU9OjE/exec',
+    CALENDAR_ID: 'eb774e9bc0c8b9090555a75ea51dd931463cf0efdef532939db334e8da060c97@group.calendar.google.com'
+  };
+  // ========================================================
+
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+  const isConfigured = !CONFIG.SCRIPT_URL.includes('PEGA_AQUI');
+
+  // Incrustar el calendario público
+  document.getElementById('calendarFrame').src =
+    `https://calendar.google.com/calendar/embed?src=${encodeURIComponent(CONFIG.CALENDAR_ID)}&ctz=Europe%2FMadrid&mode=MONTH`;
+
+  const form = document.getElementById('reservaForm');
+  const fileInput = document.getElementById('fianza');
+  const submitBtn = document.getElementById('submitBtn');
+  const submitLabel = document.getElementById('submitLabel');
+  const spinner = document.getElementById('spinner');
+  const errorMsg = document.getElementById('errorMsg');
+  const successMsg = document.getElementById('successMsg');
+  const plate = document.getElementById('addressPlate');
+  const platePortal = plate.querySelector('[data-plate-portal]');
+  const platePisoLetra = plate.querySelector('[data-plate-piso-letra]');
+
+  let fileData = null; // { base64, mimeType, fileName }
+
+  function showError(msg) {
+    errorMsg.textContent = msg;
+    errorMsg.hidden = false;
+  }
+
+  function clearError() {
+    errorMsg.hidden = true;
+    errorMsg.textContent = '';
+  }
+
+  function updateSubmitState() {
+    submitBtn.disabled = !(form.checkValidity() && fileData !== null);
+  }
+
+  function updatePlate() {
+    const { portal, piso, letra } = form;
+    if (portal.value && piso.value && letra.value) {
+      platePortal.textContent = `Portal ${portal.value}`;
+      platePisoLetra.textContent = `${piso.value}º ${letra.value}`;
+      plate.classList.remove('is-empty');
+    } else {
+      platePortal.textContent = 'Portal —';
+      platePisoLetra.textContent = '—';
+      plate.classList.add('is-empty');
+    }
+  }
+
+  form.addEventListener('input', () => {
+    clearError();
+    updateSubmitState();
+    updatePlate();
+  });
+
+  fileInput.addEventListener('change', () => {
+    clearError();
+    fileData = null;
+    updateSubmitState();
+
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    if (file.size > MAX_FILE_SIZE) {
+      showError('El archivo supera el tamaño máximo de 5 MB.');
+      fileInput.value = '';
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      // reader.result = "data:<mime>;base64,<data>"
+      const base64 = reader.result.split(',')[1];
+      fileData = {
+        base64: base64,
+        mimeType: file.type || 'application/octet-stream',
+        fileName: file.name
+      };
+      updateSubmitState();
+    };
+    reader.onerror = () => showError('No se pudo leer el archivo seleccionado.');
+    reader.readAsDataURL(file);
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearError();
+
+    if (!form.checkValidity() || !fileData) {
+      form.reportValidity();
+      return;
+    }
+
+    if (!isConfigured) {
+      showError('Este formulario aún no está conectado a Google Apps Script: configura CONFIG.SCRIPT_URL en el código.');
+      return;
+    }
+
+    const payload = {
+      accion: 'reserva',
+      nombre: form.nombre.value.trim(),
+      portal: form.portal.value,
+      piso: form.piso.value,
+      letra: form.letra.value,
+      telefono: form.telefono.value.trim(),
+      email: form.email.value.trim(),
+      diaReserva: form.diaReserva.value, // 'YYYY-MM-DD'
+      horario: form.horario.value,
+      iban: form.iban.value.trim().toUpperCase(),
+      fileBase64: fileData.base64,
+      fileMimeType: fileData.mimeType,
+      fileName: fileData.fileName
+    };
+
+    submitBtn.disabled = true;
+    spinner.hidden = false;
+    submitLabel.textContent = 'Enviando...';
+
+    try {
+      const response = await fetch(CONFIG.SCRIPT_URL, {
+        method: 'POST',
+        // text/plain evita el preflight CORS; Apps Script parsea el JSON igualmente
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        form.hidden = true;
+        successMsg.hidden = false;
+      } else {
+        throw new Error(result.message || 'Error desconocido al enviar la reserva.');
+      }
+    } catch (err) {
+      showError('No se pudo enviar la solicitud: ' + err.message);
+      submitBtn.disabled = false;
+    } finally {
+      spinner.hidden = true;
+      submitLabel.textContent = 'Enviar solicitud';
+    }
+  });
+
+  // ===== Devolución del local y fianza =====
+  const MAX_PHOTOS = 6;
+
+  const devForm = document.getElementById('devolucionForm');
+  const reservaIdInput = document.getElementById('reservaId');
+  const fotosInput = document.getElementById('fotosDevolucion');
+  const devSubmitBtn = document.getElementById('devSubmitBtn');
+  const devSubmitLabel = document.getElementById('devSubmitLabel');
+  const devSpinner = document.getElementById('devSpinner');
+  const devErrorMsg = document.getElementById('devErrorMsg');
+  const devSuccessMsg = document.getElementById('devSuccessMsg');
+  const fotosHint = document.getElementById('fotosHint');
+
+  let fotosData = []; // [{ base64, mimeType, fileName }]
+
+  // Si se llega desde el enlace del correo de aprobación (?reservaId=...), precargarlo.
+  const prefilledId = new URLSearchParams(location.search).get('reservaId');
+  if (prefilledId) {
+    reservaIdInput.value = prefilledId;
+    devForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function showDevError(msg) {
+    devErrorMsg.textContent = msg;
+    devErrorMsg.hidden = false;
+  }
+
+  function clearDevError() {
+    devErrorMsg.hidden = true;
+    devErrorMsg.textContent = '';
+  }
+
+  function updateDevSubmitState() {
+    devSubmitBtn.disabled = !(reservaIdInput.value.trim() && fotosData.length > 0);
+  }
+
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve({
+        base64: reader.result.split(',')[1],
+        mimeType: file.type || 'image/jpeg',
+        fileName: file.name
+      });
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  reservaIdInput.addEventListener('input', () => {
+    clearDevError();
+    updateDevSubmitState();
+  });
+
+  fotosInput.addEventListener('change', async () => {
+    clearDevError();
+    fotosData = [];
+    fotosHint.textContent = 'Hasta 6 fotos, 5 MB cada una.';
+    updateDevSubmitState();
+
+    const files = Array.from(fotosInput.files);
+    if (!files.length) return;
+
+    if (files.length > MAX_PHOTOS) {
+      showDevError(`Máximo ${MAX_PHOTOS} fotos por envío.`);
+      fotosInput.value = '';
+      return;
+    }
+
+    const tooBig = files.find((f) => f.size > MAX_FILE_SIZE);
+    if (tooBig) {
+      showDevError(`"${tooBig.name}" supera el tamaño máximo de 5 MB.`);
+      fotosInput.value = '';
+      return;
+    }
+
+    try {
+      fotosData = await Promise.all(files.map(fileToBase64));
+      fotosHint.textContent = `${files.length} foto(s) seleccionada(s).`;
+    } catch {
+      showDevError('No se pudieron leer las fotos seleccionadas.');
+      fotosData = [];
+    }
+    updateDevSubmitState();
+  });
+
+  devForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    clearDevError();
+
+    if (!reservaIdInput.value.trim() || !fotosData.length) return;
+
+    if (!isConfigured) {
+      showDevError('Este formulario aún no está conectado a Google Apps Script: configura CONFIG.SCRIPT_URL en el código.');
+      return;
+    }
+
+    const payload = {
+      accion: 'devolucion',
+      reservaId: reservaIdInput.value.trim(),
+      fotos: fotosData
+    };
+
+    devSubmitBtn.disabled = true;
+    devSpinner.hidden = false;
+    devSubmitLabel.textContent = 'Enviando...';
+
+    try {
+      const response = await fetch(CONFIG.SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        devForm.hidden = true;
+        devSuccessMsg.hidden = false;
+      } else {
+        throw new Error(result.message || 'Error desconocido al enviar las fotos.');
+      }
+    } catch (err) {
+      showDevError('No se pudo enviar: ' + err.message);
+      devSubmitBtn.disabled = false;
+    } finally {
+      devSpinner.hidden = true;
+      devSubmitLabel.textContent = 'Enviar fotos';
+    }
+  });
+</script>
+</body>
+</html>
