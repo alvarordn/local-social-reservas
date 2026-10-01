@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Normas del Local Social</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #F0ECE4;
+    --surface: #FFFFFF;
+    --ink: #2A2420;
+    --ink-muted: #6B6259;
+    --accent: #3F6B5E;
+    --border: #DAD3C7;
+    --font-display: 'IBM Plex Sans', system-ui, sans-serif;
+    --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #1B1815;
+      --surface: #24211D;
+      --ink: #EDE7DD;
+      --ink-muted: #A79E8F;
+      --accent: #6FA396;
+      --border: #3A352E;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #1B1815;
+    --surface: #24211D;
+    --ink: #EDE7DD;
+    --ink-muted: #A79E8F;
+    --accent: #6FA396;
+    --border: #3A352E;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    display: flex;
+    justify-content: center;
+    padding-inline: 16px;
+    padding-block: 40px;
+  }
+
+  .page {
+    width: 100%;
+    max-width: 680px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .back {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .back:hover { text-decoration: underline; }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin: 0 0 6px;
+  }
+
+  header h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(24px, 5vw, 30px);
+    line-height: 1.15;
+    margin: 0 0 8px;
+    text-wrap: balance;
+  }
+
+  header p {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  article h2 {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 8px;
+  }
+
+  article p, article li {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+
+  article p { margin: 0 0 8px; }
+
+  article ul {
+    margin: 0 0 8px;
+    padding-left: 20px;
+  }
+
+  article + article {
+    border-top: 1px solid var(--border);
+    padding-top: 18px;
+  }
+
+  .highlight {
+    background: color-mix(in srgb, var(--accent) 14%, transparent);
+    padding: 2px 4px;
+    border-radius: 3px;
+  }
+
+  footer {
+    font-size: 12px;
+    color: var(--ink-muted);
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <a class="back" href="index.html">&larr; Volver a la reserva</a>
+
+    <header>
+      <p class="eyebrow">Comunidad de vecinos</p>
+      <h1>Reglamento de uso del local social</h1>
+      <p>Resumen de las normas que todo vecino acepta al solicitar una reserva. Esta es una versión adaptada para lectura en la web del reglamento oficial.</p>
+    </header>
+
+    <section class="card">
+
+      <article>
+        <h2>1&ndash;2. Objeto y gestión</h2>
+        <p>El local social es propiedad de la Comunidad de Vecinos y se destina a actividades culturales y de ocio. Se cede a los vecinos que lo soliciten para uso propio, que se hacen responsables de su apertura, cierre y correcto uso.</p>
+      </article>
+
+      <article>
+        <h2>3. Quién puede reservar</h2>
+        <ul>
+          <li>Ser vecino de la Comunidad, mayor de 18 años y estar al día en el pago de las cuotas.</li>
+          <li>El solicitante debe ser residente y estar presente durante todo el uso del local el día reservado. No se permite reservar en nombre de otra persona que no cumpla los requisitos.</li>
+        </ul>
+      </article>
+
+      <article>
+        <h2>4. Solicitudes</h2>
+        <ul>
+          <li>La solicitud debe indicar tipo de uso, fecha, horario, teléfono de contacto y justificante del pago de la fianza.</li>
+          <li>Si no vas a usar una reserva confirmada y no lo avisas con al menos 48&nbsp;h de antelación, no podrás reservar de nuevo en los 3 meses siguientes (salvo causas climatológicas).</li>
+          <li>Máximo 15 reservas por vivienda al año. Si ya has disfrutado de 3 reservas en el año y otro vecino con menos reservas solicita la misma fecha con un mes de antelación, él tendrá prioridad.</li>
+          <li>Aforo máximo: 40 personas.</li>
+        </ul>
+      </article>
+
+      <article>
+        <h2>5. Días y horario de uso</h2>
+        <ul>
+          <li>Se puede reservar cualquier día, en día completo, solo almuerzo (12:00&ndash;18:30) o solo cena (19:00&ndash;00:00).</li>
+          <li>Horario de descanso de los vecinos &mdash; extremar el cuidado con ruidos: de 15:30 a 17:30 y a partir de las 22:00. <span class="highlight">Prohibida la música y los cánticos en esas franjas.</span></li>
+          <li><span class="highlight">A partir de las 23:00 hay que abandonar las zonas comunes exteriores y pasar al interior del local.</span></li>
+          <li>La recogida y limpieza (especialmente en el exterior) debe estar terminada antes de las 00:00.</li>
+          <li>Si el ruido molesta, hay que dirigirse educadamente al vecino que usa el local, no al encargado de reservas ni al Presidente.</li>
+        </ul>
+      </article>
+
+      <article>
+        <h2>6. Limpieza</h2>
+        <p>La comunidad limpia el local los viernes y lunes (nunca sábado ni domingo). Al terminar tu reserva debes dejarlo limpio; se recomienda revisarlo la mañana siguiente por si otro vecino lo usa ese mismo día. Cualquier incidencia se comunica el lunes siguiente a la comisión, con fotos.</p>
+      </article>
+
+      <article>
+        <h2>7. Fianza</h2>
+        <ul>
+          <li>Fianza de <strong>100&nbsp;€</strong>, a cargo del solicitante, abonada al presentar la solicitud.</li>
+          <li>El local debe devolverse tan limpio como se recibió (barbacoa incluida). La fianza cubre también el incumplimiento de estas normas.</li>
+          <li>La devolución se gestiona el jueves siguiente a la reserva, tras comprobar el estado del local, y como máximo 10 días después.</li>
+          <li>La retención de la fianza la decide la comisión de gestión del local.</li>
+        </ul>
+      </article>
+
+      <article>
+        <h2>8. Prohibiciones</h2>
+        <ul>
+          <li><span class="highlight">Fumar en el interior del local.</span></li>
+          <li>Realizar actividades con ánimo de lucro sin autorización de la comisión, o superar el aforo.</li>
+          <li>Dejar menores sin un adulto responsable presente.</li>
+          <li>Instalar megafonía en el exterior, decorar de forma que deteriore el local, o usar/almacenar materiales peligrosos (inflamables, bengalas, petardos...).</li>
+          <li>Dejar comida o basura (salvo alimentos guardados en frío, máx. 24&nbsp;h sin perjudicar la siguiente reserva).</li>
+          <li>Consumo de tabaco, drogas o alcohol por menores; actuaciones que generen quejas vecinales; dejar puertas de la Comunidad abiertas; balones de reglamento en los jardines; entrada de animales.</li>
+          <li>El responsable de la reserva debe estar siempre presente y localizable por móvil.</li>
+          <li>Incumplir estas normas puede conllevar la prohibición de reservar el local durante 6 meses, decidido por la comisión.</li>
+        </ul>
+      </article>
+
+      <article>
+        <h2>9. Obligaciones al terminar</h2>
+        <ul>
+          <li>Responder por los daños causados al mobiliario, utensilios, suelo, paredes o techo del local.</li>
+          <li>Apagar luces y aparatos eléctricos, y cerrar puertas y ventanas.</li>
+          <li>Dejar el local al menos tan limpio como se encontró, y el mobiliario en su sitio.</li>
+          <li>Sacar la basura reciclando correctamente.</li>
+        </ul>
+      </article>
+
+    </section>
+
+    <footer>Reglamento de Uso del Local Social &mdash; Comunidad de Vecinos del Edificio Prensa (En Sevilla, a 2 de enero de 2025).</footer>
+
+  </div>
+</body>
+</html>

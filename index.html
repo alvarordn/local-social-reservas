@@ -239,6 +239,11 @@
     line-height: 1.45;
   }
 
+  .consent label a {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
   button[type="submit"] {
     font-family: var(--font-display);
     font-size: 15px;
@@ -401,6 +406,13 @@
           </label>
         </div>
 
+        <div class="section consent">
+          <input type="checkbox" id="normas" name="normas" required>
+          <label for="normas">
+            He leído y me comprometo a cumplir las <a href="normas.html" target="_blank" rel="noopener">normas del local</a>
+          </label>
+        </div>
+
         <p id="errorMsg" hidden></p>
 
         <button type="submit" id="submitBtn" disabled>
@@ -412,37 +424,6 @@
       <div id="successMsg" hidden>
         <strong>Solicitud enviada correctamente</strong>
         Recibirás un correo cuando el administrador la revise.
-      </div>
-    </section>
-
-    <section class="card">
-      <p class="eyebrow" style="margin-bottom:2px">Después de tu reserva</p>
-      <h2>Devolución del local y fianza</h2>
-      <p class="hint" style="margin-bottom:14px;">Cuando termines de usar el local, sube aquí las fotos de cómo lo has dejado. El enlace del correo de aprobación rellena automáticamente el identificador de tu reserva.</p>
-
-      <form id="devolucionForm" novalidate>
-        <div class="section field">
-          <label for="reservaId">Identificador de tu reserva</label>
-          <input type="text" id="reservaId" name="reservaId" required placeholder="Lo encontrarás en el correo de aprobación">
-        </div>
-
-        <div class="section field">
-          <label for="fotosDevolucion">Fotos del local</label>
-          <input type="file" id="fotosDevolucion" name="fotosDevolucion" required accept="image/*" multiple>
-          <p class="hint" id="fotosHint">Hasta 6 fotos, 5 MB cada una.</p>
-        </div>
-
-        <p id="devErrorMsg" hidden></p>
-
-        <button type="submit" id="devSubmitBtn" disabled>
-          <span id="devSpinner" class="spinner" hidden></span>
-          <span id="devSubmitLabel">Enviar fotos</span>
-        </button>
-      </form>
-
-      <div id="devSuccessMsg" hidden>
-        <strong>Fotos enviadas correctamente</strong>
-        El administrador revisará el estado del local y te confirmará la devolución de la fianza por correo.
       </div>
     </section>
 
@@ -597,136 +578,6 @@
     }
   });
 
-  // ===== Devolución del local y fianza =====
-  const MAX_PHOTOS = 6;
-
-  const devForm = document.getElementById('devolucionForm');
-  const reservaIdInput = document.getElementById('reservaId');
-  const fotosInput = document.getElementById('fotosDevolucion');
-  const devSubmitBtn = document.getElementById('devSubmitBtn');
-  const devSubmitLabel = document.getElementById('devSubmitLabel');
-  const devSpinner = document.getElementById('devSpinner');
-  const devErrorMsg = document.getElementById('devErrorMsg');
-  const devSuccessMsg = document.getElementById('devSuccessMsg');
-  const fotosHint = document.getElementById('fotosHint');
-
-  let fotosData = []; // [{ base64, mimeType, fileName }]
-
-  // Si se llega desde el enlace del correo de aprobación (?reservaId=...), precargarlo.
-  const prefilledId = new URLSearchParams(location.search).get('reservaId');
-  if (prefilledId) {
-    reservaIdInput.value = prefilledId;
-    devForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }
-
-  function showDevError(msg) {
-    devErrorMsg.textContent = msg;
-    devErrorMsg.hidden = false;
-  }
-
-  function clearDevError() {
-    devErrorMsg.hidden = true;
-    devErrorMsg.textContent = '';
-  }
-
-  function updateDevSubmitState() {
-    devSubmitBtn.disabled = !(reservaIdInput.value.trim() && fotosData.length > 0);
-  }
-
-  function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve({
-        base64: reader.result.split(',')[1],
-        mimeType: file.type || 'image/jpeg',
-        fileName: file.name
-      });
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
-
-  reservaIdInput.addEventListener('input', () => {
-    clearDevError();
-    updateDevSubmitState();
-  });
-
-  fotosInput.addEventListener('change', async () => {
-    clearDevError();
-    fotosData = [];
-    fotosHint.textContent = 'Hasta 6 fotos, 5 MB cada una.';
-    updateDevSubmitState();
-
-    const files = Array.from(fotosInput.files);
-    if (!files.length) return;
-
-    if (files.length > MAX_PHOTOS) {
-      showDevError(`Máximo ${MAX_PHOTOS} fotos por envío.`);
-      fotosInput.value = '';
-      return;
-    }
-
-    const tooBig = files.find((f) => f.size > MAX_FILE_SIZE);
-    if (tooBig) {
-      showDevError(`"${tooBig.name}" supera el tamaño máximo de 5 MB.`);
-      fotosInput.value = '';
-      return;
-    }
-
-    try {
-      fotosData = await Promise.all(files.map(fileToBase64));
-      fotosHint.textContent = `${files.length} foto(s) seleccionada(s).`;
-    } catch {
-      showDevError('No se pudieron leer las fotos seleccionadas.');
-      fotosData = [];
-    }
-    updateDevSubmitState();
-  });
-
-  devForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    clearDevError();
-
-    if (!reservaIdInput.value.trim() || !fotosData.length) return;
-
-    if (!isConfigured) {
-      showDevError('Este formulario aún no está conectado a Google Apps Script: configura CONFIG.SCRIPT_URL en el código.');
-      return;
-    }
-
-    const payload = {
-      accion: 'devolucion',
-      reservaId: reservaIdInput.value.trim(),
-      fotos: fotosData
-    };
-
-    devSubmitBtn.disabled = true;
-    devSpinner.hidden = false;
-    devSubmitLabel.textContent = 'Enviando...';
-
-    try {
-      const response = await fetch(CONFIG.SCRIPT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        devForm.hidden = true;
-        devSuccessMsg.hidden = false;
-      } else {
-        throw new Error(result.message || 'Error desconocido al enviar las fotos.');
-      }
-    } catch (err) {
-      showDevError('No se pudo enviar: ' + err.message);
-      devSubmitBtn.disabled = false;
-    } finally {
-      devSpinner.hidden = true;
-      devSubmitLabel.textContent = 'Enviar fotos';
-    }
-  });
 </script>
 </body>
 </html>

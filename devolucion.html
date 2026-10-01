@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Devolución del Local y Fianza</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #F0ECE4;
+    --surface: #FFFFFF;
+    --ink: #2A2420;
+    --ink-muted: #6B6259;
+    --accent: #3F6B5E;
+    --accent-contrast: #FFFFFF;
+    --denied: #A24B3F;
+    --border: #DAD3C7;
+    --success-bg: #E7EEE9;
+    --success-border: #BFD6C9;
+    --font-display: 'IBM Plex Sans', system-ui, sans-serif;
+    --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+    --font-mono: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #1B1815;
+      --surface: #24211D;
+      --ink: #EDE7DD;
+      --ink-muted: #A79E8F;
+      --accent: #6FA396;
+      --accent-contrast: #12211C;
+      --denied: #D2776A;
+      --border: #3A352E;
+      --success-bg: #1E2B26;
+      --success-border: #3A5147;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #1B1815;
+    --surface: #24211D;
+    --ink: #EDE7DD;
+    --ink-muted: #A79E8F;
+    --accent: #6FA396;
+    --accent-contrast: #12211C;
+    --denied: #D2776A;
+    --border: #3A352E;
+    --success-bg: #1E2B26;
+    --success-border: #3A5147;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body);
+    display: flex;
+    justify-content: center;
+    padding-inline: 16px;
+    padding-block: 40px;
+  }
+
+  .page {
+    width: 100%;
+    max-width: 620px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    margin: 0 0 6px;
+  }
+
+  header h1 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(24px, 5vw, 30px);
+    line-height: 1.15;
+    margin: 0 0 8px;
+    text-wrap: balance;
+  }
+
+  header p {
+    margin: 0;
+    color: var(--ink-muted);
+    font-size: 15px;
+    line-height: 1.5;
+    max-width: 46ch;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+  }
+
+  .card h2 {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0 0 12px;
+  }
+
+  form { display: flex; flex-direction: column; gap: 16px; }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+
+  label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  input[type="file"] {
+    font: inherit;
+    font-family: var(--font-body);
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px;
+    width: 100%;
+    font-size: 13px;
+  }
+
+  input:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  .hint {
+    font-size: 12px;
+    color: var(--ink-muted);
+    margin: 0;
+  }
+
+  .reserva-code {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-muted);
+    word-break: break-all;
+  }
+
+  button[type="submit"] {
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--accent-contrast);
+    background: var(--accent);
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+  }
+
+  button[type="submit"]:disabled {
+    background: var(--border);
+    color: var(--ink-muted);
+    cursor: not-allowed;
+  }
+
+  .spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .spinner { animation-duration: 1.6s; }
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  [hidden] { display: none !important; }
+
+  #errorMsg {
+    font-size: 13px;
+    color: var(--denied);
+    margin: 0;
+  }
+
+  #successMsg {
+    background: var(--success-bg);
+    border: 1px solid var(--success-border);
+    border-radius: 10px;
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  #successMsg strong { display: block; margin-bottom: 4px; }
+</style>
+</head>
+<body>
+  <div class="page">
+
+    <header>
+      <p class="eyebrow">Comunidad de vecinos</p>
+      <h1>Devolución del local y fianza</h1>
+      <p>Sube una foto por cada campo para mostrar cómo ha quedado el local. El administrador revisará el estado y te confirmará la devolución de la fianza por correo.</p>
+    </header>
+
+    <section class="card">
+      <div id="invalidLink" hidden>
+        <h2>Enlace no válido</h2>
+        <p class="hint">Este enlace no incluye el identificador de tu reserva. Usa el enlace que recibiste en el correo de aprobación de tu reserva para acceder a esta página.</p>
+      </div>
+
+      <div id="formWrapper">
+        <h2>Fotos del local</h2>
+        <p class="reserva-code" id="reservaCode"></p>
+
+        <form id="devolucionForm" novalidate>
+          <div class="field">
+            <label for="foto1">Foto 1</label>
+            <input type="file" id="foto1" name="foto1" accept="image/*">
+          </div>
+          <div class="field">
+            <label for="foto2">Foto 2</label>
+            <input type="file" id="foto2" name="foto2" accept="image/*">
+          </div>
+          <div class="field">
+            <label for="foto3">Foto 3</label>
+            <input type="file" id="foto3" name="foto3" accept="image/*">
+          </div>
+          <div class="field">
+            <label for="foto4">Foto 4</label>
+            <input type="file" id="foto4" name="foto4" accept="image/*">
+          </div>
+          <div class="field">
+            <label for="foto5">Foto 5</label>
+            <input type="file" id="foto5" name="foto5" accept="image/*">
+          </div>
+          <p class="hint">Sube al menos una foto. Puedes dejar vacíos los campos que no necesites. Máximo 5&nbsp;MB cada foto.</p>
+
+          <p id="errorMsg" hidden></p>
+
+          <button type="submit" id="submitBtn" disabled>
+            <span id="spinner" class="spinner" hidden></span>
+            <span id="submitLabel">Enviar fotos</span>
+          </button>
+        </form>
+
+        <div id="successMsg" hidden>
+          <strong>Fotos enviadas correctamente</strong>
+          El administrador revisará el estado del local y te confirmará la devolución de la fianza por correo.
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+<script>
+  // ======= CONFIGURACIÓN: debe coincidir con index.html =======
+  const CONFIG = {
+    SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbw_9qJucNusMPb9tN1hg6vkbLWvpkpvujv-mReOE8Lwlg-s7sPoE6cAOtV6OIU9OjE/exec'
+  };
+  // ==============================================================
+
+  const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+  const PHOTO_FIELDS = ['foto1', 'foto2', 'foto3', 'foto4', 'foto5'];
+
+  const reservaId = new URLSearchParams(location.search).get('reservaId');
+
+  const invalidLink = document.getElementById('invalidLink');
+  const formWrapper = document.getElementById('formWrapper');
+
+  if (!reservaId) {
+    invalidLink.hidden = false;
+    formWrapper.hidden = true;
+  } else {
+    document.getElementById('reservaCode').textContent = `Reserva: ${reservaId}`;
+
+    const form = document.getElementById('devolucionForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const submitLabel = document.getElementById('submitLabel');
+    const spinner = document.getElementById('spinner');
+    const errorMsg = document.getElementById('errorMsg');
+    const successMsg = document.getElementById('successMsg');
+
+    const fotosData = {}; // { foto1: {base64, mimeType, fileName}, ... }
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.hidden = false;
+    }
+
+    function clearError() {
+      errorMsg.hidden = true;
+      errorMsg.textContent = '';
+    }
+
+    function updateSubmitState() {
+      submitBtn.disabled = Object.keys(fotosData).length === 0;
+    }
+
+    function fileToBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve({
+          base64: reader.result.split(',')[1],
+          mimeType: file.type || 'image/jpeg',
+          fileName: file.name
+        });
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    PHOTO_FIELDS.forEach((fieldId) => {
+      const input = document.getElementById(fieldId);
+      input.addEventListener('change', async () => {
+        clearError();
+        delete fotosData[fieldId];
+
+        const file = input.files[0];
+        if (!file) {
+          updateSubmitState();
+          return;
+        }
+
+        if (file.size > MAX_FILE_SIZE) {
+          showError(`"${file.name}" supera el tamaño máximo de 5 MB.`);
+          input.value = '';
+          updateSubmitState();
+          return;
+        }
+
+        try {
+          fotosData[fieldId] = await fileToBase64(file);
+        } catch {
+          showError('No se pudo leer la foto seleccionada.');
+          input.value = '';
+        }
+        updateSubmitState();
+      });
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearError();
+
+      const fotos = PHOTO_FIELDS.filter((id) => fotosData[id]).map((id) => fotosData[id]);
+      if (!fotos.length) return;
+
+      const payload = {
+        accion: 'devolucion',
+        reservaId: reservaId,
+        fotos: fotos
+      };
+
+      submitBtn.disabled = true;
+      spinner.hidden = false;
+      submitLabel.textContent = 'Enviando...';
+
+      try {
+        const response = await fetch(CONFIG.SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          form.hidden = true;
+          successMsg.hidden = false;
+        } else {
+          throw new Error(result.message || 'Error desconocido al enviar las fotos.');
+        }
+      } catch (err) {
+        showError('No se pudo enviar: ' + err.message);
+        submitBtn.disabled = false;
+      } finally {
+        spinner.hidden = true;
+        submitLabel.textContent = 'Enviar fotos';
+      }
+    });
+  }
+</script>
+</body>
+</html>
